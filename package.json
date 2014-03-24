@@ -29,9 +29,5 @@
   },
   "homepage": "https://github.com/functioncallback/session.socket.io",
   "_id": "session.socket.io@0.1.6",
-  "dist": {
-    "shasum": "fb3464a9beec66109bd47929c0a615c2797eb29e"
-  },
-  "_from": "session.socket.io@0.1.x",
-  "_resolved": "https://registry.npmjs.org/session.socket.io/-/session.socket.io-0.1.6.tgz"
+  "_from": "session.socket.io@0.1.x"
 }
