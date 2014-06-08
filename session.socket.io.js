@@ -11,6 +11,8 @@ module.exports = function(io, sessionStore, cookieParser, key) {
     };
   };
 
+  this.to = io.to;
+
   this.on = function(event, callback) {
     return bind.call(this, event, callback, io.sockets);
   };
