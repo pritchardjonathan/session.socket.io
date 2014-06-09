@@ -1,38 +1,16 @@
-var util = require('util');
-
-module.exports = function(io, sessionStore, cookieParser, key) {
+module.exports = function(io, sessionStore, cookieParser, key){
   key = key || 'connect.sid';
-
-  this.of = function(namespace) {
-    return {
-      on: function(event, callback) {
-        return bind.call(this, event, callback, io.of(namespace));
-      }.bind(this)
+  return function(socket, next){
+    socket.getSession = function(callback){
+      cookieParser(socket.handshake, {}, function (parseErr){
+        if(parseErr){ callback(parseErr); return; }
+        sessionStore.get(findCookie(socket.handshake), function (storeErr, session) {
+          callback(storeErr, session);
+        });
+      });
     };
+    next();
   };
-
-  this.to = io.to;
-
-  this.on = function(event, callback) {
-    return bind.call(this, event, callback, io.sockets);
-  };
-
-  // fikse denne
-  this.getSession = function(socket, callback) {
-    cookieParser(socket.handshake, {}, function (parseErr){
-      sessionStore.get(findCookie(socket.handshake), function (storeErr, session) {
-        callback(parseErr | storeErr, session);
-      });
-    });
-  };
-
-  function bind(event, callback, namespace) {
-    namespace.on(event, function (socket) {
-      this.getSession(socket, function (err, session) {
-        callback(err, socket, session);
-      });
-    }.bind(this));
-  }
 
   function findCookie(handshakeInput) {
     // fix for express 4.x (parse the cookie sid to extract the correct part)
@@ -43,7 +21,7 @@ module.exports = function(io, sessionStore, cookieParser, key) {
 
     // original code
     return (handshake.secureCookies && handshake.secureCookies[key])
-        || (handshake.signedCookies && handshake.signedCookies[key])
-        || (handshake.cookies && handshake.cookies[key]);
+      || (handshake.signedCookies && handshake.signedCookies[key])
+      || (handshake.cookies && handshake.cookies[key]);
   }
 };
